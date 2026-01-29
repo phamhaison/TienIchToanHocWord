@@ -25,50 +25,57 @@ namespace TienIchToanHocWord
         /// </summary>
         private void btn_Casio_Click(object sender, RibbonControlEventArgs e)
         {
-            // 1. Lấy đường dẫn hợp lệ (Sử dụng hàm kiểm tra đã viết ở bước trước)
-            string duongDanHopLe = LayDuongDanCasioHopLe();
+            // 1. Lấy đường dẫn và kiểm tra tính tồn tại
+            string duongDanCasio = Properties.Settings.Default.DuongDanCasio;
 
-            // Nếu không chọn được file hoặc file không tồn tại, dừng thực thi
-            if (string.IsNullOrEmpty(duongDanHopLe)) return;
+            if (string.IsNullOrEmpty(duongDanCasio) || !System.IO.File.Exists(duongDanCasio))
+            {
+                MessageBox.Show("Hệ thống chưa có đường dẫn máy tính Casio hoặc đường dẫn cũ không còn đúng.\n\nVui lòng chọn file .exe của máy tính Casio.",
+                    "Cấu hình hệ thống", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
+                using (OpenFileDialog openDlg = new OpenFileDialog())
+                {
+                    openDlg.Filter = "Ứng dụng giả lập (*.exe)|*.exe";
+                    openDlg.Title = "Tìm file chạy máy tính Casio";
+                    if (openDlg.ShowDialog() == DialogResult.OK)
+                    {
+                        Properties.Settings.Default.DuongDanCasio = openDlg.FileName;
+                        Properties.Settings.Default.Save();
+                        duongDanCasio = openDlg.FileName;
+                    }
+                    else return; // Người dùng hủy chọn
+                }
+            }
+
+            // 2. Xử lý hiển thị Task Pane
             try
             {
                 if (taskPaneHienThi == null)
                 {
-                    // Khởi tạo UserControl mới
                     taskPaneCasio controlCasio = new taskPaneCasio();
-
-                    // Thêm vào tập hợp CustomTaskPanes
                     taskPaneHienThi = Globals.ThisAddIn.CustomTaskPanes.Add(controlCasio, "Máy tính Casio FX");
-                    taskPaneHienThi.Width = 450; // Độ rộng mặc định ban đầu
                     taskPaneHienThi.Visible = true;
 
-                    // Thực hiện nhúng ứng dụng và lấy chiều rộng thực tế
-                    int chieuRongPixel = controlCasio.LayDoRongChuan(duongDanHopLe);
+                    // Gọi hàm nhúng và lấy chiều rộng Pixel
+                    int pixelWidth = controlCasio.KhoiDongVaNhungCasio(duongDanCasio);
 
-                    // Tự động điều chỉnh độ rộng Task Pane theo DPI (Logic đã tối ưu)
-                    CapNhatDoRongTaskPaneTheoDpi(chieuRongPixel);
+                    // Cập nhật độ rộng thông minh theo DPI (Hàm đã viết ở bước trước)
+                    CapNhatDoRongTaskPaneTheoDpi(pixelWidth);
                 }
                 else
                 {
-                    // Đảo ngược trạng thái hiển thị
                     taskPaneHienThi.Visible = !taskPaneHienThi.Visible;
-
                     if (taskPaneHienThi.Visible)
                     {
-                        // SỬA LỖI TẠI ĐÂY: Sử dụng thuộc tính .Control thay vì .ContentControl
-                        // Ép kiểu về taskPaneCasio để gọi hàm LayDoRongChuan
-                        if (taskPaneHienThi.Control is taskPaneCasio bienDieuKhien)
-                        {
-                            int chieuRongMoi = bienDieuKhien.LayDoRongChuan(duongDanHopLe);
-                            CapNhatDoRongTaskPaneTheoDpi(chieuRongMoi);
-                        }
+                        // Nếu bật lại, ép nhúng lại để tránh mất hình do thay đổi độ phân giải
+                        var control = (taskPaneCasio)taskPaneHienThi.Control;
+                        control.KhoiDongVaNhungCasio(duongDanCasio);
                     }
                 }
             }
-            catch (Exception ngoaiLe)
+            catch (Exception ex)
             {
-                System.Windows.Forms.MessageBox.Show("Lỗi thực thi Task Pane: " + ngoaiLe.Message);
+                MessageBox.Show("Lỗi khởi động: " + ex.Message);
             }
         }
 
