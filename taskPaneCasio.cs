@@ -18,13 +18,14 @@ namespace TienIchToanHocWord
         }
         public int LayDoRongChuan(string duongDanExe)
         {
+            if (quyTrinhCasio != null && !quyTrinhCasio.HasExited) return this.pnlCasio.Width;
+
             try
             {
-                if (!System.IO.File.Exists(duongDanExe)) return 0;
                 quyTrinhCasio = Process.Start(duongDanExe);
 
                 int demCho = 0;
-                while (quyTrinhCasio.MainWindowHandle == IntPtr.Zero && demCho < 30)
+                while (quyTrinhCasio.MainWindowHandle == IntPtr.Zero && demCho < 40)
                 {
                     Thread.Sleep(200);
                     quyTrinhCasio.Refresh();
@@ -34,27 +35,28 @@ namespace TienIchToanHocWord
                 IntPtr handleCasio = quyTrinhCasio.MainWindowHandle;
                 if (handleCasio != IntPtr.Zero)
                 {
-                    // SỬA LỖI TẠI ĐÂY: styleHienTai viết liền, không có khoảng trắng
+                    // 1. Gọt viền và ép kiểu cửa sổ con (WS_CHILD)
                     int styleHienTai = WindowsApiHelper.GetWindowLong(handleCasio, WindowsApiHelper.GWL_STYLE);
+                    int styleMoi = (int)((styleHienTai & ~WindowsApiHelper.WS_POPUP & ~WindowsApiHelper.WS_CAPTION & ~WindowsApiHelper.WS_THICKFRAME) | WindowsApiHelper.WS_CHILD);
+                    WindowsApiHelper.SetWindowLong(handleCasio, WindowsApiHelper.GWL_STYLE, styleMoi);
 
-                    // Gọt bỏ viền và thanh tiêu đề của Casio
-                    WindowsApiHelper.SetWindowLong(handleCasio, WindowsApiHelper.GWL_STYLE,
-                        (styleHienTai & ~WindowsApiHelper.WS_CAPTION & ~WindowsApiHelper.WS_THICKFRAME));
+                    // 2. Nhúng vào Panel của Word
+                    WindowsApiHelper.SetParent(handleCasio, this.pnlCasio.Handle);
 
-                    // Lấy kích thước vùng làm việc thực tế
+                    // 3. Lấy kích thước thực tế
                     WindowsApiHelper.RECT rect;
                     WindowsApiHelper.GetClientRect(handleCasio, out rect);
-                    int pixelWidth = rect.Right - rect.Left;
-                    int pixelHeight = rect.Bottom - rect.Top;
+                    int w = rect.Right - rect.Left;
+                    int h = rect.Bottom - rect.Top;
 
-                    // Nhúng vào Panel
-                    WindowsApiHelper.SetParent(handleCasio, this.pnlCasio.Handle);
-                    WindowsApiHelper.MoveWindow(handleCasio, 0, 0, pixelWidth, pixelHeight, true);
+                    // 4. Ép vẽ lại nội dung (Sửa lỗi màn hình trắng)
+                    WindowsApiHelper.SetWindowPos(handleCasio, IntPtr.Zero, 0, 0, w, h,
+                        WindowsApiHelper.SWP_NOZORDER | WindowsApiHelper.SWP_FRAMECHANGED | WindowsApiHelper.SWP_SHOWWINDOW);
 
-                    return pixelWidth;
+                    return w;
                 }
             }
-            catch (Exception ngoaiLe) { Debug.WriteLine(ngoaiLe.Message); }
+            catch (Exception) { /* Xử lý log nếu cần */ }
             return 0;
         }
         public int LayChieuRongPixelThucTe(string duongDanExe)
