@@ -37,6 +37,13 @@ namespace TienIchToanHocWord
         [DllImport("gdi32.dll")]
         public static extern int GetDeviceCaps(IntPtr hdc, int nIndex);
 
+        // Thêm vào WindowsApiHelper.cs
+        [DllImport("user32.dll")]
+        public static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);
+
+        public const int SW_SHOW = 5;
+        public const int GWL_EXSTYLE = -20;
+        public const int WS_EX_MDICHILD = 0x00000040;
 
         // --- CÁC HẰNG SỐ (CONSTANTS) ---
 
@@ -59,6 +66,7 @@ namespace TienIchToanHocWord
 
         // DPI Capability
         public const int LOGPIXELSX = 88;
+
 
 
         // --- CẤU TRÚC DỮ LIỆU (STRUCTS) ---

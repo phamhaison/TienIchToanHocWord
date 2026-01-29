@@ -25,7 +25,7 @@ namespace TienIchToanHocWord
                 quyTrinhCasio = Process.Start(duongDanExe);
 
                 int demCho = 0;
-                while (quyTrinhCasio.MainWindowHandle == IntPtr.Zero && demCho < 40)
+                while (quyTrinhCasio.MainWindowHandle == IntPtr.Zero && demCho < 50)
                 {
                     Thread.Sleep(200);
                     quyTrinhCasio.Refresh();
@@ -35,28 +35,31 @@ namespace TienIchToanHocWord
                 IntPtr handleCasio = quyTrinhCasio.MainWindowHandle;
                 if (handleCasio != IntPtr.Zero)
                 {
-                    // 1. Gọt viền và ép kiểu cửa sổ con (WS_CHILD)
+                    // 1. Xử lý Style để tương thích màn hình DPI cao
                     int styleHienTai = WindowsApiHelper.GetWindowLong(handleCasio, WindowsApiHelper.GWL_STYLE);
-                    int styleMoi = (int)((styleHienTai & ~WindowsApiHelper.WS_POPUP & ~WindowsApiHelper.WS_CAPTION & ~WindowsApiHelper.WS_THICKFRAME) | WindowsApiHelper.WS_CHILD);
+                    int styleMoi = (int)((styleHienTai & ~WindowsApiHelper.WS_POPUP & ~WindowsApiHelper.WS_CAPTION) | WindowsApiHelper.WS_CHILD);
                     WindowsApiHelper.SetWindowLong(handleCasio, WindowsApiHelper.GWL_STYLE, styleMoi);
 
-                    // 2. Nhúng vào Panel của Word
+                    // 2. Thực hiện nhúng
                     WindowsApiHelper.SetParent(handleCasio, this.pnlCasio.Handle);
 
-                    // 3. Lấy kích thước thực tế
-                    WindowsApiHelper.RECT rect;
-                    WindowsApiHelper.GetClientRect(handleCasio, out rect);
-                    int w = rect.Right - rect.Left;
-                    int h = rect.Bottom - rect.Top;
+                    // 3. Lấy kích thước vùng chứa (Panel) thay vì lấy kích thước Casio
+                    // Điều này giúp Casio tự co giãn theo Panel bất kể DPI máy tính là bao nhiêu
+                    int w = this.pnlCasio.Width;
+                    int h = this.pnlCasio.Height;
 
-                    // 4. Ép vẽ lại nội dung (Sửa lỗi màn hình trắng)
+                    // 4. Ép hiển thị và định vị lại
+                    WindowsApiHelper.ShowWindow(handleCasio, WindowsApiHelper.SW_SHOW);
                     WindowsApiHelper.SetWindowPos(handleCasio, IntPtr.Zero, 0, 0, w, h,
                         WindowsApiHelper.SWP_NOZORDER | WindowsApiHelper.SWP_FRAMECHANGED | WindowsApiHelper.SWP_SHOWWINDOW);
 
-                    return w;
+                    // Trả về chiều rộng thực tế để Ribbon đồng bộ
+                    WindowsApiHelper.RECT rect;
+                    WindowsApiHelper.GetClientRect(handleCasio, out rect);
+                    return rect.Right - rect.Left;
                 }
             }
-            catch (Exception) { /* Xử lý log nếu cần */ }
+            catch (Exception ex) { MessageBox.Show("Lỗi nhúng DPI cao: " + ex.Message); }
             return 0;
         }
         public int LayChieuRongPixelThucTe(string duongDanExe)

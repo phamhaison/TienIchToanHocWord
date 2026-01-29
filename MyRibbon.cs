@@ -79,16 +79,22 @@ namespace TienIchToanHocWord
         {
             if (pixelWidth <= 0 || taskPaneHienThi == null) return;
 
+            // Lấy thông số màn hình
             IntPtr hdc = WindowsApiHelper.GetDC(IntPtr.Zero);
             int dpiX = WindowsApiHelper.GetDeviceCaps(hdc, WindowsApiHelper.LOGPIXELSX);
             WindowsApiHelper.ReleaseDC(IntPtr.Zero, hdc);
 
+            // Thuật toán Architect: 
+            // Trên màn hình 2880x1920, DPI thường là 192 (Scale 200%) hoặc 144 (Scale 150%)
+            // Points = Pixels * (72 / DPI)
             float tiLeQuyDoi = 72f / dpiX;
-            // Cộng thêm 75 Points bù lề khung Task Pane như đã thống nhất
-            int doRongPoint = (int)(pixelWidth * tiLeQuyDoi) + 75;
+
+            // Bù trừ lề: Trên màn hình độ phân giải cao, lề Task Pane chiếm nhiều Points hơn
+            // Chúng ta dùng 80 Points để đảm bảo an toàn
+            int doRongPoint = (int)(pixelWidth * tiLeQuyDoi) + 80;
 
             if (doRongPoint < 300) doRongPoint = 300;
-            if (doRongPoint > 800) doRongPoint = 800;
+            if (doRongPoint > 900) doRongPoint = 900; // Nới lỏng giới hạn cho màn hình lớn
 
             taskPaneHienThi.Width = doRongPoint;
         }
