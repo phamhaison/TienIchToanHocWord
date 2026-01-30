@@ -73,6 +73,7 @@
             this.btn_TaoBookMark.Label = "Tạo Book mark";
             this.btn_TaoBookMark.Name = "btn_TaoBookMark";
             this.btn_TaoBookMark.ShowImage = true;
+            this.btn_TaoBookMark.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.btn_TaoBookMark_Click);
             // 
             // btn_ChuanHoaHienThi
             // 

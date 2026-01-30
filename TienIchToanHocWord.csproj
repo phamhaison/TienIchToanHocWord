@@ -34,7 +34,7 @@
     <PublishUrl>C:\Users\haiso\source\repos\TienIchToanHocWord\</PublishUrl>
     <InstallUrl />
     <TargetCulture>en</TargetCulture>
-    <ApplicationVersion>1.0.0.3</ApplicationVersion>
+    <ApplicationVersion>1.0.0.4</ApplicationVersion>
     <AutoIncrementApplicationRevision>true</AutoIncrementApplicationRevision>
     <UpdateEnabled>true</UpdateEnabled>
     <UpdateInterval>7</UpdateInterval>
@@ -220,8 +220,15 @@
     <Compile Include="ChuanHoaTrangDayHoc.Designer.cs">
       <DependentUpon>ChuanHoaTrangDayHoc.cs</DependentUpon>
     </Compile>
+    <Compile Include="frm_TaoBookMark.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="frm_TaoBookMark.Designer.cs">
+      <DependentUpon>frm_TaoBookMark.cs</DependentUpon>
+    </Compile>
     <Compile Include="LopCanChinhPhuongAnTheoPhamVi.cs" />
     <Compile Include="LopChuanHoaTrangDayHoc.cs" />
+    <Compile Include="LopTaoBookMark.cs" />
     <Compile Include="LopTimKiemThayThe.cs" />
     <Compile Include="MyRibbon.cs">
       <SubType>Component</SubType>
@@ -238,6 +245,12 @@
     <Compile Include="taskPaneCasio.Designer.cs">
       <DependentUpon>taskPaneCasio.cs</DependentUpon>
     </Compile>
+    <Compile Include="TaskPanel_DauTrangCauHoi.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="TaskPanel_DauTrangCauHoi.Designer.cs">
+      <DependentUpon>TaskPanel_DauTrangCauHoi.cs</DependentUpon>
+    </Compile>
     <Compile Include="WindowsApiHelper.cs" />
     <Compile Include="xuLyXuatPDF.cs" />
     <EmbeddedResource Include="CanChinhPhuonAnPhamVi.resx">
@@ -245,6 +258,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="ChuanHoaTrangDayHoc.resx">
       <DependentUpon>ChuanHoaTrangDayHoc.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="frm_TaoBookMark.resx">
+      <DependentUpon>frm_TaoBookMark.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="MyRibbon.resx">
       <DependentUpon>MyRibbon.cs</DependentUpon>
@@ -260,6 +276,9 @@
     </Compile>
     <EmbeddedResource Include="taskPaneCasio.resx">
       <DependentUpon>taskPaneCasio.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="TaskPanel_DauTrangCauHoi.resx">
+      <DependentUpon>TaskPanel_DauTrangCauHoi.cs</DependentUpon>
     </EmbeddedResource>
     <None Include="app.config" />
     <None Include="Properties\Settings.settings">

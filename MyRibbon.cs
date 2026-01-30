@@ -9,6 +9,24 @@ namespace TienIchToanHocWord
 {
     public partial class MyRibbon
     {
+        // Khai báo biến toàn cục để quản lý thực thể Form (Tránh mở nhiều cửa sổ)
+        private frm_TaoBookMark _formTaoBookMark;
+
+        /// <summary>
+        /// Xử lý sự kiện click nút Tạo Book mark trên Ribbon
+        /// </summary>
+        private void btn_TaoBookMark_Click(object sender, RibbonControlEventArgs e)
+        {
+            try
+            {
+                if (_formTaoBookMark == null || _formTaoBookMark.IsDisposed)
+                {
+                    _formTaoBookMark = new frm_TaoBookMark();
+                }
+                _formTaoBookMark.Show();
+            }
+            catch (Exception ex) { MessageBox.Show(ex.Message); }
+        }
         // Khai báo biến toàn cục để quản lý Task Pane
         private CustomTaskPane taskPaneHienThi;
 
