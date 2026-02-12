@@ -34,5 +34,17 @@ namespace TienIchToanHocWord.Properties {
                 this["DuongDanCasio"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string DuongDanPythonExe {
+            get {
+                return ((string)(this["DuongDanPythonExe"]));
+            }
+            set {
+                this["DuongDanPythonExe"] = value;
+            }
+        }
     }
 }
